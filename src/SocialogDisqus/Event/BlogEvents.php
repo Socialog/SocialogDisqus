@@ -10,12 +10,11 @@ use Zend\EventManager\Event;
  */
 class BlogEvents extends AbstractListenerAggregate
 {
-
     protected $globalHooks = array(
-        'theme' => array(
-            'post.post@100' => 'onRenderPost',
-            'body.bottom@100' => 'onRenderBodyBottom',
-            'home-post.post@100' => 'onHomeRenderPost',
+        'view' => array(
+            'post.post@100'         => 'onRenderPost',
+            'body.bottom@100'       => 'onRenderBodyBottom',
+            'home-post.post@100'    => 'onHomeRenderPost',
         ),
     );
 
@@ -25,10 +24,7 @@ class BlogEvents extends AbstractListenerAggregate
      */
     public function onRenderPost(Event $e)
     {
-        $e->stopPropagation(true);
-        $sm = $this->getServiceLocator();
-        $viewRenderer = $sm->get('ViewRenderer');
-        return $viewRenderer->partial('socialog-disqus/post');
+        return $e->getTarget()->partial('socialog-disqus/post', $e->getParams());
     }
 
     /**
@@ -37,9 +33,7 @@ class BlogEvents extends AbstractListenerAggregate
      */
     public function onRenderBodyBottom(Event $e)
     {
-        $sm = $this->getServiceLocator();
-        $viewRenderer = $sm->get('ViewRenderer');
-        return $viewRenderer->partial('socialog-disqus/home/bottom');
+        return $e->getTarget()->partial('socialog-disqus/home/bottom', $e->getParams());
     }
 
     /**
@@ -48,9 +42,6 @@ class BlogEvents extends AbstractListenerAggregate
      */
     public function onHomeRenderPost(Event $e)
     {
-        $sm = $this->getServiceLocator();
-        $viewRenderer = $sm->get('ViewRenderer');
-        return $viewRenderer->partial('socialog-disqus/home/post', $e->getParams());
+        return $e->getTarget()->partial('socialog-disqus/home/post', $e->getParams());
     }
-
 }
